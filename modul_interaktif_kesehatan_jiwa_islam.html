@@ -1,0 +1,1135 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sakinah: Modul Interaktif Kesehatan Mental Islam</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Amiri:wght@400;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome for Premium Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: #f8fafc;
+            background-image: 
+                radial-gradient(at 0% 0%, rgba(16, 185, 129, 0.05) 0px, transparent 50%),
+                radial-gradient(at 100% 0%, rgba(245, 158, 11, 0.03) 0px, transparent 50%),
+                radial-gradient(at 50% 100%, rgba(16, 185, 129, 0.03) 0px, transparent 50%);
+        }
+        .arabic {
+            font-family: 'Amiri', serif;
+        }
+        /* Custom scrollbar for tab navigation */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+        /* Card & Button micro-interactions */
+        .interactive-card {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .interactive-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 30px -10px rgba(16, 185, 129, 0.12);
+        }
+        /* Smooth transitions for content switching */
+        .fade-in-active {
+            animation: fadeIn 0.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        /* Custom styled range input */
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #10b981;
+            cursor: pointer;
+            border: 3px solid #ffffff;
+            box-shadow: 0 4px 10px rgba(16, 185, 129, 0.3);
+            transition: all 0.15s ease-in-out;
+        }
+        input[type="range"]::-webkit-slider-thumb:hover {
+            transform: scale(1.2);
+            background: #059669;
+        }
+    </style>
+</head>
+<body class="text-slate-800 min-h-screen flex flex-col antialiased selection:bg-emerald-100 selection:text-emerald-900">
+
+    <!-- Floating Header -->
+    <header class="bg-white/70 backdrop-blur-md border-b border-slate-200/80 sticky top-0 z-50 px-4 py-3 md:px-8 transition-all duration-300">
+        <div class="max-w-7xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-4">
+            <div class="flex items-center gap-3">
+                <div class="p-2.5 bg-gradient-to-tr from-emerald-500 to-teal-600 text-white rounded-2xl shadow-md shadow-emerald-200 flex items-center justify-center">
+                    <i class="fa-solid fa-feather-pointed text-lg"></i>
+                </div>
+                <div>
+                    <div class="flex items-center gap-2">
+                        <h1 class="text-base md:text-lg font-extrabold text-slate-900 tracking-tight">Sakinah</h1>
+                        <span class="px-2 py-0.5 bg-emerald-50 text-emerald-700 text-[10px] font-bold rounded-full border border-emerald-100">v2.0 Premium</span>
+                    </div>
+                    <p class="text-[11px] text-slate-500 font-medium">Nafsi: Modul Kesehatan Jiwa Kaffah & Interaktif</p>
+                </div>
+            </div>
+            
+            <!-- Quick Audio Control Dashboard -->
+            <div class="flex items-center gap-2 bg-slate-100/80 p-1 rounded-xl border border-slate-200/60 w-full sm:w-auto justify-between sm:justify-start">
+                <div class="flex items-center gap-1.5 px-2 text-slate-500">
+                    <i class="fa-solid fa-circle-nodes text-[10px] text-emerald-500 animate-pulse"></i>
+                    <span class="text-[10px] font-bold uppercase tracking-wider">Atmosphere</span>
+                </div>
+                <div class="flex items-center gap-1">
+                    <button id="ambientBtn" onclick="toggleAmbiance()" class="px-3 py-1.5 text-[11px] font-bold rounded-lg bg-emerald-500 text-white shadow-sm hover:bg-emerald-600 transition duration-200 flex items-center gap-1.5">
+                        <i class="fa-solid fa-wind text-[10px]"></i>
+                        <span>Relaksasi: Off</span>
+                    </button>
+                    <button id="sfxToggleBtn" onclick="toggleSFX()" class="p-1.5 rounded-lg bg-white text-slate-600 hover:text-slate-800 border border-slate-200 transition duration-200" title="Toggle Sound FX">
+                        <i id="sfxIcon" class="fa-solid fa-volume-high text-xs text-emerald-600"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Mobile Horizontal Tab Scroller -->
+    <div class="lg:hidden bg-white/90 border-b border-slate-200 sticky top-[69px] z-40 px-4 py-2.5 overflow-x-auto no-scrollbar flex gap-2">
+        <button onclick="switchTab('intro')" id="m-tab-intro" class="flex-shrink-0 px-4 py-2 rounded-xl text-xs font-bold transition-all duration-200 flex items-center gap-2 bg-emerald-600 text-white shadow-sm">
+            <i class="fa-solid fa-compass"></i> Pengantar
+        </button>
+        <button onclick="switchTab('akar')" id="m-tab-akar" class="flex-shrink-0 px-4 py-2 rounded-xl text-xs font-bold transition-all duration-200 flex items-center gap-2 bg-slate-100 text-slate-600">
+            <i class="fa-solid fa-brain"></i> Akar Masalah
+        </button>
+        <button onclick="switchTab('waktu')" id="m-tab-waktu" class="flex-shrink-0 px-4 py-2 rounded-xl text-xs font-bold transition-all duration-200 flex items-center gap-2 bg-slate-100 text-slate-600">
+            <i class="fa-solid fa-clock"></i> Dimensi Waktu
+        </button>
+        <button onclick="switchTab('sayap')" id="m-tab-sayap" class="flex-shrink-0 px-4 py-2 rounded-xl text-xs font-bold transition-all duration-200 flex items-center gap-2 bg-slate-100 text-slate-600">
+            <i class="fa-solid fa-dove"></i> Khauf & Raja'
+        </button>
+        <button onclick="switchTab('solusi')" id="m-tab-solusi" class="flex-shrink-0 px-4 py-2 rounded-xl text-xs font-bold transition-all duration-200 flex items-center gap-2 bg-slate-100 text-slate-600">
+            <i class="fa-solid fa-anchor"></i> Solusi Makna
+        </button>
+        <button onclick="switchTab('kuis')" id="m-tab-kuis" class="flex-shrink-0 px-4 py-2 rounded-xl text-xs font-bold transition-all duration-200 flex items-center gap-2 bg-emerald-50 text-emerald-700 border border-emerald-200/60">
+            <i class="fa-solid fa-circle-question"></i> Kuis Mandiri
+        </button>
+    </div>
+
+    <div class="flex-1 max-w-7xl w-full mx-auto grid grid-cols-1 lg:grid-cols-4 gap-8 p-4 md:p-8">
+        
+        <!-- Sidebar Navigation (Desktop Only) -->
+        <aside class="hidden lg:block lg:col-span-1 space-y-4">
+            <div class="bg-white/80 backdrop-blur-md p-5 rounded-3xl border border-slate-200/60 shadow-xl shadow-slate-100/40 sticky top-28 space-y-4">
+                <div class="flex items-center gap-2 px-1">
+                    <span class="w-1.5 h-3 bg-emerald-500 rounded-full"></span>
+                    <span class="text-[11px] font-extrabold text-slate-400 uppercase tracking-widest">Daftar Materi</span>
+                </div>
+                
+                <nav class="space-y-1.5">
+                    <button onclick="switchTab('intro')" id="tab-intro" class="w-full text-left px-4 py-3.5 rounded-2xl transition-all duration-200 flex items-center gap-3 font-bold text-sm bg-emerald-600 text-white shadow-md shadow-emerald-200/80 active:scale-98">
+                        <i class="fa-solid fa-compass text-base"></i> Pengantar & Kaffah
+                    </button>
+                    <button onclick="switchTab('akar')" id="tab-akar" class="w-full text-left px-4 py-3.5 rounded-2xl transition-all duration-200 flex items-center gap-3 font-bold text-sm text-slate-600 hover:bg-slate-50 active:scale-98">
+                        <i class="fa-solid fa-brain text-base text-slate-400"></i> Akar Masalah Jiwa
+                    </button>
+                    <button onclick="switchTab('waktu')" id="tab-waktu" class="w-full text-left px-4 py-3.5 rounded-2xl transition-all duration-200 flex items-center gap-3 font-bold text-sm text-slate-600 hover:bg-slate-50 active:scale-98">
+                        <i class="fa-solid fa-clock text-base text-slate-400"></i> Dimensi Waktu & Emosi
+                    </button>
+                    <button onclick="switchTab('sayap')" id="tab-sayap" class="w-full text-left px-4 py-3.5 rounded-2xl transition-all duration-200 flex items-center gap-3 font-bold text-sm text-slate-600 hover:bg-slate-50 active:scale-98">
+                        <i class="fa-solid fa-dove text-base text-slate-400"></i> Khauf & Raja' (2 Sayap)
+                    </button>
+                    <button onclick="switchTab('solusi')" id="tab-solusi" class="w-full text-left px-4 py-3.5 rounded-2xl transition-all duration-200 flex items-center gap-3 font-bold text-sm text-slate-600 hover:bg-slate-50 active:scale-98">
+                        <i class="fa-solid fa-anchor text-base text-slate-400"></i> Solusi Kaffah & Makna
+                    </button>
+                    <button onclick="switchTab('kuis')" id="tab-kuis" class="w-full text-left px-4 py-3.5 rounded-2xl transition-all duration-200 flex items-center gap-3 font-bold text-sm text-slate-600 hover:bg-emerald-50 hover:text-emerald-700 border border-dashed border-emerald-300 active:scale-98">
+                        <i class="fa-solid fa-circle-question text-base text-emerald-600/80"></i> Kuis Interaktif
+                    </button>
+                </nav>
+
+                <div class="pt-4 border-t border-slate-100 text-center">
+                    <p class="text-[10px] text-slate-400 font-medium">Gunakan tombol di atas atau navigasi di bawah konten untuk menjelajahi modul.</p>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="lg:col-span-3 bg-white border border-slate-200/70 shadow-xl shadow-slate-100/50 rounded-3xl p-6 md:p-10 min-h-[65vh] flex flex-col justify-between relative overflow-hidden">
+            
+            <!-- Background Accent Shapes -->
+            <div class="absolute top-0 right-0 w-64 h-64 bg-emerald-500/5 rounded-full blur-3xl pointer-events-none"></div>
+            <div class="absolute bottom-0 left-0 w-80 h-80 bg-amber-500/3 rounded-full blur-3xl pointer-events-none"></div>
+
+            <!-- Section 1: Intro & Kaffah -->
+            <div id="content-intro" class="tab-content fade-in-active space-y-6">
+                <div class="inline-flex items-center gap-2 px-3.5 py-1.5 bg-emerald-50 text-emerald-700 rounded-full text-xs font-bold border border-emerald-100">
+                    <i class="fa-solid fa-seedling"></i>
+                    <span>Bab 1: Perspektif Kaffah</span>
+                </div>
+                
+                <h2 class="text-2xl md:text-4xl font-extrabold text-slate-900 tracking-tight leading-tight">
+                    Meluruskan Pemahaman Kesehatan Jiwa dalam Islam
+                </h2>
+                
+                <p class="text-slate-600 leading-relaxed text-sm md:text-base">
+                    Pernyataan bahwa <span class="bg-amber-50 px-1 py-0.5 rounded font-semibold text-amber-900">"penyakit mental dalam Islam hanya dua: takut (khauf) dan sedih (huzn)"</span> sebaiknya dipahami sebagai bentuk penyederhanaan untuk kepentingan dakwah praktis, bukan sebagai batasan definisi mutlak. 
+                </p>
+                
+                <!-- Premium Alert Callout -->
+                <div class="bg-gradient-to-r from-amber-50 to-orange-50 border-l-4 border-amber-500 p-5 rounded-2xl shadow-sm">
+                    <div class="flex gap-4">
+                        <div class="flex-shrink-0 w-10 h-10 rounded-xl bg-amber-500 text-white flex items-center justify-center shadow-md shadow-amber-200">
+                            <i class="fa-solid fa-triangle-exclamation text-base"></i>
+                        </div>
+                        <div>
+                            <h4 class="font-extrabold text-amber-950 text-sm md:text-base">Poin Pelurusan (Kaffah)</h4>
+                            <p class="text-xs md:text-sm text-amber-800/90 mt-1 leading-relaxed">
+                                Al-Qur'an memang sering menyandingkan rasa takut dan sedih secara berdekatan. Namun, khazanah penyakit hati dalam Islam jauh lebih luas dan mencakup berbagai hal batiniah lainnya yang merusak kedamaian jiwa.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="space-y-4 pt-2">
+                    <h3 class="font-extrabold text-slate-800 text-base md:text-lg flex items-center gap-2">
+                        <span class="w-1.5 h-4 bg-emerald-500 rounded-full"></span>
+                        Khazanah Penyakit Hati Lain dalam Khazanah Islam:
+                    </h3>
+                    
+                    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                        <div class="interactive-card p-4 bg-slate-50/50 rounded-2xl border border-slate-200/60 flex items-start gap-3">
+                            <div class="p-2 bg-rose-50 text-rose-600 rounded-xl font-bold text-xs flex items-center justify-center w-8 h-8">👁️</div>
+                            <div>
+                                <strong class="text-slate-800 text-xs block">Riya'</strong>
+                                <span class="text-[11px] text-slate-500">Pamer amal shalih demi pujian makhluk.</span>
+                            </div>
+                        </div>
+                        <div class="interactive-card p-4 bg-slate-50/50 rounded-2xl border border-slate-200/60 flex items-start gap-3">
+                            <div class="p-2 bg-rose-50 text-rose-600 rounded-xl font-bold text-xs flex items-center justify-center w-8 h-8">🐍</div>
+                            <div>
+                                <strong class="text-slate-800 text-xs block">Hasad</strong>
+                                <span class="text-[11px] text-slate-500">Iri hati & tidak senang atas nikmat orang lain.</span>
+                            </div>
+                        </div>
+                        <div class="interactive-card p-4 bg-slate-50/50 rounded-2xl border border-slate-200/60 flex items-start gap-3">
+                            <div class="p-2 bg-rose-50 text-rose-600 rounded-xl font-bold text-xs flex items-center justify-center w-8 h-8">🪞</div>
+                            <div>
+                                <strong class="text-slate-800 text-xs block">Ujub</strong>
+                                <span class="text-[11px] text-slate-500">Kagum berlebihan pada kelebihan diri sendiri.</span>
+                            </div>
+                        </div>
+                        <div class="interactive-card p-4 bg-slate-50/50 rounded-2xl border border-slate-200/60 flex items-start gap-3">
+                            <div class="p-2 bg-rose-50 text-rose-600 rounded-xl font-bold text-xs flex items-center justify-center w-8 h-8">🎭</div>
+                            <div>
+                                <strong class="text-slate-800 text-xs block">Nifaq</strong>
+                                <span class="text-[11px] text-slate-500">Kemunafikan, lahir & batin yang tidak sejalan.</span>
+                            </div>
+                        </div>
+                        <div class="interactive-card p-4 bg-slate-50/50 rounded-2xl border border-slate-200/60 flex items-start gap-3">
+                            <div class="p-2 bg-rose-50 text-rose-600 rounded-xl font-bold text-xs flex items-center justify-center w-8 h-8">👑</div>
+                            <div>
+                                <strong class="text-slate-800 text-xs block">Takabbur</strong>
+                                <span class="text-[11px] text-slate-500">Menyombongkan diri & meremehkan manusia.</span>
+                            </div>
+                        </div>
+                        <div class="interactive-card p-4 bg-slate-50/50 rounded-2xl border border-slate-200/60 flex items-start gap-3">
+                            <div class="p-2 bg-rose-50 text-rose-600 rounded-xl font-bold text-xs flex items-center justify-center w-8 h-8">🌍</div>
+                            <div>
+                                <strong class="text-slate-800 text-xs block">Wahn</strong>
+                                <span class="text-[11px] text-slate-500">Cinta dunia berlebihan & takut akan kematian.</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Footer Navigation inside content -->
+                <div class="p-5 bg-emerald-50/60 rounded-2xl border border-emerald-100 flex flex-col sm:flex-row items-center justify-between gap-4 mt-6">
+                    <span class="text-xs text-emerald-800 font-bold text-center sm:text-left">Mari mulai menggali mafahim (cara pandang) yang lebih mendalam.</span>
+                    <button onclick="switchTab('akar')" class="w-full sm:w-auto px-5 py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-xs rounded-xl transition-all duration-150 active:scale-95 flex items-center justify-center gap-2 shadow-md shadow-emerald-200">
+                        <span>Mulai Bab 2</span>
+                        <i class="fa-solid fa-arrow-right"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Section 2: Akar Masalah & Tas Simulator -->
+            <div id="content-akar" class="tab-content hidden space-y-6">
+                <div class="inline-flex items-center gap-2 px-3.5 py-1.5 bg-emerald-50 text-emerald-700 rounded-full text-xs font-bold border border-emerald-100">
+                    <i class="fa-solid fa-brain"></i>
+                    <span>Bab 2: Akar Masalah</span>
+                </div>
+                
+                <h2 class="text-2xl md:text-4xl font-extrabold text-slate-900 tracking-tight leading-tight">
+                    Krisis Mental Bukan Berasal Dari Otak Semata, Melainkan Cara Pandang Hidup
+                </h2>
+                
+                <p class="text-slate-600 leading-relaxed text-sm">
+                    Banyak orang mengira masalah terbesar generasi muda berakar dari <span class="font-bold text-slate-800">📱 Media sosial</span>, <span class="font-bold text-slate-800">💰 Ekonomi</span>, <span class="font-bold text-slate-800">❤️ Percintaan</span>, atau <span class="font-bold text-slate-800">🎓 Pendidikan</span>. Namun, dalam kacamata Islam, semua itu hanyalah <strong>pemicu (gejala)</strong>, bukan akar masalah yang sebenarnya (<span class="italic font-bold">ashlul musykilah</span>).
+                </p>
+
+                <div class="p-4 bg-sky-50 text-sky-900 rounded-2xl border border-sky-100 flex items-start gap-4">
+                    <div class="flex-shrink-0 w-10 h-10 rounded-xl bg-sky-500 text-white flex items-center justify-center shadow-md shadow-sky-200">
+                        <i class="fa-solid fa-stethoscope"></i>
+                    </div>
+                    <div>
+                        <h4 class="font-extrabold text-sm md:text-base">Metafora Demam</h4>
+                        <p class="text-xs md:text-sm text-sky-800 mt-1 leading-relaxed">
+                            Demam bukanlah penyakit utama, melainkan pertanda adanya infeksi di dalam tubuh. Begitu pula anxiety/kecemasan; ia adalah gejala bahwa hati sedang kehilangan sandaran yang benar.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Interactive Widget 1: Tas Simulator Redesign -->
+                <div class="bg-gradient-to-tr from-slate-50 to-slate-100/50 p-6 rounded-3xl border border-slate-200 space-y-6">
+                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
+                        <div>
+                            <h3 class="font-extrabold text-slate-800 text-sm md:text-base flex items-center gap-2">
+                                <i class="fa-solid fa-backpack text-emerald-600"></i>
+                                <span>Simulator Beban Jiwa (Mental Backpack)</span>
+                            </h3>
+                            <p class="text-xs text-slate-500">Geser slider untuk melihat efek jika terus memikul beban tanpa bersandar (Tawakal) kepada Allah:</p>
+                        </div>
+                        <!-- Dynamic indicator -->
+                        <span id="backpackStatus" class="px-3 py-1 text-xs font-bold bg-emerald-100 text-emerald-800 rounded-full border border-emerald-200">Sangat Ringan</span>
+                    </div>
+                    
+                    <div class="space-y-4">
+                        <input type="range" id="backpackSlider" min="1" max="30" value="1" oninput="updateBackpackSimulator(this.value)" class="w-full h-2.5 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-emerald-600">
+                        
+                        <!-- Visual Container for the Backpack/Flask representation -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 items-center bg-white p-5 rounded-2xl border border-slate-200/60 shadow-sm">
+                            <div class="flex items-center gap-4">
+                                <!-- Dynamic Container Visual (Glow based on level) -->
+                                <div id="backpackContainerVisual" class="w-16 h-20 bg-emerald-50 border-2 border-emerald-500 rounded-xl relative overflow-hidden flex flex-col justify-end transition-all duration-300 shadow-md">
+                                    <div id="backpackFluid" class="w-full bg-gradient-to-t from-emerald-500 to-teal-400 transition-all duration-300" style="height: 10%;"></div>
+                                    <div class="absolute inset-0 flex items-center justify-center">
+                                        <i id="backpackIcon" class="fa-solid fa-face-smile text-emerald-600 text-2xl transition-all duration-300"></i>
+                                    </div>
+                                </div>
+                                <div>
+                                    <h4 class="font-extrabold text-slate-800 text-sm">Mental Load: <span id="backpackWeight" class="text-emerald-600 font-extrabold">1</span> kg</h4>
+                                    <p class="text-slate-500 text-xs mt-0.5">Disimpan selama: <span id="backpackDay" class="font-bold text-slate-700">1</span> hari berturut-turut.</p>
+                                </div>
+                            </div>
+                            <div class="border-t md:border-t-0 md:border-l border-slate-100 pt-3 md:pt-0 md:pl-4">
+                                <p id="backpackDesc" class="text-xs text-slate-600 leading-relaxed font-medium">Beban ringan harian, belum terlalu mengganggu keseharian.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-emerald-50/50 p-4 rounded-xl border-l-4 border-emerald-500 text-slate-700 italic text-xs md:text-sm leading-relaxed">
+                    "Ingatlah, hanya dengan mengingat Allah hati menjadi tenteram." (QS. Ar-Ra'd: 28). Bukan karena masalahnya mendadak lenyap, melainkan karena hati menemukan tempat bersandar yang tak terhingga.
+                </div>
+
+                <div class="flex flex-col sm:flex-row justify-between items-center gap-3 mt-6">
+                    <button onclick="switchTab('intro')" class="w-full sm:w-auto px-5 py-3 border border-slate-300 text-slate-600 font-bold text-xs rounded-xl hover:bg-slate-50 active:scale-95 transition flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-arrow-left"></i> Kembali
+                    </button>
+                    <button onclick="switchTab('waktu')" class="w-full sm:w-auto px-5 py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-xl active:scale-95 transition flex items-center justify-center gap-2 shadow-md shadow-emerald-200">
+                        <span>Maju ke Bab 3</span>
+                        <i class="fa-solid fa-arrow-right"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Section 3: Dimensi Waktu & Emosi -->
+            <div id="content-waktu" class="tab-content hidden space-y-6">
+                <div class="inline-flex items-center gap-2 px-3.5 py-1.5 bg-emerald-50 text-emerald-700 rounded-full text-xs font-bold border border-emerald-100">
+                    <i class="fa-solid fa-clock"></i>
+                    <span>Bab 3: Dimensi Waktu</span>
+                </div>
+                
+                <h2 class="text-2xl md:text-4xl font-extrabold text-slate-900 tracking-tight leading-tight">
+                    Islam Membagi Waktu Kehidupan Menjadi Dua Dimensi Emosi
+                </h2>
+                
+                <p class="text-slate-600 leading-relaxed text-sm">
+                    Kecemasan mental sering kali merupakan akibat dari ketidakseimbangan orientasi pikiran kita terhadap waktu. Islam mengkategorikan emosi batiniah ini menjadi:
+                </p>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Masa Lalu Card (Huzn) -->
+                    <div class="interactive-card p-6 bg-gradient-to-tr from-rose-50/50 to-rose-100/10 rounded-3xl border border-rose-100 space-y-4 shadow-sm">
+                        <div class="w-12 h-12 rounded-2xl bg-rose-500 text-white flex items-center justify-center shadow-md shadow-rose-200">
+                            <i class="fa-solid fa-rotate-left text-lg"></i>
+                        </div>
+                        <div>
+                            <h4 class="font-extrabold text-rose-950 text-base">Masa Lalu &rarr; Huzn (Kesedihan)</h4>
+                            <p class="text-xs text-rose-800/90 mt-1 leading-relaxed">
+                                Disebabkan oleh sesuatu yang telah terjadi dan tak bisa diubah kembali oleh kekuatan manusia.
+                            </p>
+                        </div>
+                        <div class="flex flex-wrap gap-1.5 pt-1">
+                            <span class="px-2.5 py-1 text-[10px] font-bold bg-white text-rose-700 rounded-lg border border-rose-100 shadow-sm"><i class="fa-solid fa-xmark text-[9px] mr-1"></i> Gagal Kuliah</span>
+                            <span class="px-2.5 py-1 text-[10px] font-bold bg-white text-rose-700 rounded-lg border border-rose-100 shadow-sm"><i class="fa-solid fa-xmark text-[9px] mr-1"></i> Putus Cinta</span>
+                            <span class="px-2.5 py-1 text-[10px] font-bold bg-white text-rose-700 rounded-lg border border-rose-100 shadow-sm"><i class="fa-solid fa-xmark text-[9px] mr-1"></i> Kehilangan</span>
+                        </div>
+                        <div class="bg-white/80 p-3.5 rounded-xl border border-rose-100/80 text-xs text-rose-900 flex items-start gap-2.5 shadow-sm">
+                            <i class="fa-solid fa-car-side mt-0.5 text-rose-600"></i>
+                            <span>Bagaikan mengemudi mobil sembari menatap kaca spion terus-menerus. Pada akhirnya Anda pasti menabrak.</span>
+                        </div>
+                    </div>
+
+                    <!-- Masa Depan Card (Khauf) -->
+                    <div class="interactive-card p-6 bg-gradient-to-tr from-amber-50/50 to-amber-100/10 rounded-3xl border border-amber-100 space-y-4 shadow-sm">
+                        <div class="w-12 h-12 rounded-2xl bg-amber-500 text-white flex items-center justify-center shadow-md shadow-amber-200">
+                            <i class="fa-solid fa-arrow-right-long text-lg"></i>
+                        </div>
+                        <div>
+                            <h4 class="font-extrabold text-amber-950 text-base">Masa Depan &rarr; Khauf (Ketakutan)</h4>
+                            <p class="text-xs text-amber-800/90 mt-1 leading-relaxed">
+                                Ketakutan berlebih terhadap skenario buruk masa depan yang sejatinya belum tentu terjadi.
+                            </p>
+                        </div>
+                        <div class="flex flex-wrap gap-1.5 pt-1">
+                            <span class="px-2.5 py-1 text-[10px] font-bold bg-white text-amber-700 rounded-lg border border-amber-100 shadow-sm">"Bagaimana kalau gagal?"</span>
+                            <span class="px-2.5 py-1 text-[10px] font-bold bg-white text-amber-700 rounded-lg border border-amber-100 shadow-sm">"Bagaimana kalau miskin?"</span>
+                        </div>
+                        <div class="bg-white/80 p-3.5 rounded-xl border border-amber-100/80 text-xs text-amber-900 flex items-start gap-2.5 shadow-sm">
+                            <i class="fa-solid fa-umbrella mt-0.5 text-amber-600"></i>
+                            <span>Bagaikan orang yang sudah membuka payung lebar-lebar padahal cuaca masih sangat cerah dan belum tentu hujan.</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="p-5 bg-gradient-to-tr from-emerald-50 to-teal-50/20 rounded-2xl border border-emerald-100 space-y-3 shadow-sm">
+                    <h4 class="font-extrabold text-emerald-950 text-sm flex items-center gap-2">
+                        <i class="fa-solid fa-shield-halved text-emerald-600"></i>
+                        <span>Keseimbangan Hakiki seorang Mukmin</span>
+                    </h4>
+                    <p class="arabic text-2xl text-emerald-900 font-bold text-right py-2 tracking-wide leading-relaxed">لَا خَوْفٌ عَلَيْهِمْ وَلَا هُمْ يَحْزَنُونَ</p>
+                    <p class="text-xs md:text-sm text-emerald-800 leading-relaxed italic">
+                        "Bagi mereka tidak ada rasa takut dan tidak pula mereka bersedih." (QS. Al-Baqarah: 38). Hal ini bukan berarti seorang mukmin bebas 100% dari emosi manusiawi tersebut, tetapi emosi tersebut tidak menguasai hidup mereka hingga mematikan sikap bersandar (tawakal) kepada Allah.
+                    </p>
+                </div>
+
+                <div class="flex flex-col sm:flex-row justify-between items-center gap-3 mt-6">
+                    <button onclick="switchTab('akar')" class="w-full sm:w-auto px-5 py-3 border border-slate-300 text-slate-600 font-bold text-xs rounded-xl hover:bg-slate-50 active:scale-95 transition flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-arrow-left"></i> Kembali
+                    </button>
+                    <button onclick="switchTab('sayap')" class="w-full sm:w-auto px-5 py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-xl active:scale-95 transition flex items-center justify-center gap-2 shadow-md shadow-emerald-200">
+                        <span>Maju ke Bab 4</span>
+                        <i class="fa-solid fa-arrow-right"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Section 4: Khauf & Raja' (2 Sayap Burung) + Balance Widget -->
+            <div id="content-sayap" class="tab-content hidden space-y-6">
+                <div class="inline-flex items-center gap-2 px-3.5 py-1.5 bg-emerald-50 text-emerald-700 rounded-full text-xs font-bold border border-emerald-100">
+                    <i class="fa-solid fa-dove"></i>
+                    <span>Bab 4: Khauf & Raja'</span>
+                </div>
+                
+                <h2 class="text-2xl md:text-4xl font-extrabold text-slate-900 tracking-tight leading-tight">
+                    Keseimbangan Jiwa: Bagaikan Dua Sayap Seekor Burung
+                </h2>
+                
+                <p class="text-slate-600 leading-relaxed text-sm">
+                    Islam membangun kesehatan jiwa dengan dua pilar utama yang harus beroperasi seimbang dalam dada manusia: <strong>Khauf (Takut kepada Allah)</strong> dan <strong>Raja' (Berharap kepada Allah)</strong>.
+                </p>
+
+                <!-- Interactive Widget 2: Sayap Burung Balance Redesign using SVG -->
+                <div class="bg-gradient-to-tr from-slate-50 to-slate-100/50 p-6 rounded-3xl border border-slate-200 space-y-6">
+                    <div>
+                        <h3 class="font-extrabold text-slate-800 text-sm md:text-base flex items-center gap-2">
+                            <i class="fa-solid fa-dove text-emerald-600"></i>
+                            <span>Simulator Keseimbangan Sayap Jiwa</span>
+                        </h3>
+                        <p class="text-xs text-slate-500">Sesuaikan keseimbangan antara Khauf (Takut) dan Raja' (Harapan):</p>
+                    </div>
+                    
+                    <div class="space-y-4">
+                        <div class="flex justify-between text-xs font-extrabold text-slate-600 px-1">
+                            <span class="flex items-center gap-1 text-rose-600"><i class="fa-solid fa-angles-left"></i> Khauf Berlebih</span>
+                            <span class="text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-200/60">Seimbang</span>
+                            <span class="flex items-center gap-1 text-sky-600">Raja' Berlebih <i class="fa-solid fa-angles-right"></i></span>
+                        </div>
+                        
+                        <input type="range" id="wingSlider" min="0" max="100" value="50" oninput="updateWingSimulator(this.value)" class="w-full h-2.5 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-emerald-600">
+                        
+                        <div class="bg-white p-5 rounded-2xl border border-slate-200/60 shadow-sm space-y-4">
+                            <!-- Dynamic Bird Canvas Container -->
+                            <div class="flex justify-around items-center text-center">
+                                <div class="space-y-1">
+                                    <p class="text-[10px] text-slate-400 font-extrabold uppercase tracking-wider">Sayap Kiri (Khauf)</p>
+                                    <p id="leftWingVal" class="text-xl font-extrabold text-rose-600">50%</p>
+                                </div>
+                                
+                                <!-- Dynamic Bird SVG Balance -->
+                                <div id="birdSVGContainer" class="w-24 h-24 flex items-center justify-center transition-all duration-300 transform rotate-0">
+                                    <svg viewBox="0 0 100 100" class="w-16 h-16 text-emerald-600" fill="currentColor">
+                                        <!-- Left Wing -->
+                                        <path id="leftWingSVG" d="M30 45 C 5 25, 20 10, 45 40 Z" fill="#f43f5e" class="transition-transform duration-150 origin-right" style="transform: scale(1);"/>
+                                        <!-- Right Wing -->
+                                        <path id="rightWingSVG" d="M70 45 C 95 25, 80 10, 55 40 Z" fill="#0284c7" class="transition-transform duration-150 origin-left" style="transform: scale(1);"/>
+                                        <!-- Bird Body -->
+                                        <path d="M50 25 C 45 25, 43 35, 43 45 C 43 65, 57 65, 57 45 C 57 35, 55 25, 50 25 Z" fill="#10b981"/>
+                                        <!-- Head & Beak -->
+                                        <circle cx="50" cy="22" r="6" fill="#10b981"/>
+                                        <polygon points="50,16 53,20 47,20" fill="#f59e0b"/>
+                                    </svg>
+                                </div>
+                                
+                                <div class="space-y-1">
+                                    <p class="text-[10px] text-slate-400 font-extrabold uppercase tracking-wider">Sayap Kanan (Raja')</p>
+                                    <p id="rightWingVal" class="text-xl font-extrabold text-sky-600">50%</p>
+                                </div>
+                            </div>
+                            
+                            <div class="border-t border-slate-100 pt-3 text-center">
+                                <span id="wingStatus" class="inline-block px-3 py-1 text-xs font-bold bg-emerald-100 text-emerald-800 rounded-full border border-emerald-200/60">Sayap Seimbang (Jiwa Sehat)</span>
+                                <p id="wingDesc" class="text-xs text-slate-500 mt-2 leading-relaxed">Jiwa Anda terbang stabil. Anda waspada dari maksiat namun tetap optimis pada limpahan rahmat Allah.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs md:text-sm">
+                    <div class="interactive-card p-5 bg-slate-50/70 rounded-2xl border border-slate-200/60 space-y-1.5">
+                        <h4 class="font-bold text-slate-800 flex items-center gap-2"><i class="fa-solid fa-circle-minus text-rose-500"></i> Bila Harapan (Raja') Hilang</h4>
+                        <p class="text-slate-500 leading-relaxed">Jiwa jatuh dalam kegelapan keputusasaan: <em>"Aku tidak berguna," "Dosaku tidak akan diampuni."</em> Hal ini dilarang keras dalam Islam.</p>
+                    </div>
+                    <div class="interactive-card p-5 bg-slate-50/70 rounded-2xl border border-slate-200/60 space-y-1.5">
+                        <h4 class="font-bold text-slate-800 flex items-center gap-2"><i class="fa-solid fa-circle-minus text-amber-500"></i> Bila Rasa Takut (Khauf) Hilang</h4>
+                        <p class="text-slate-500 leading-relaxed">Jiwa terjangkit virus <strong>Ghurur</strong> (tertipu angan-angan kosong): <em>"Santai saja, nanti juga taubat,"</em> sehingga meremehkan dosa.</p>
+                    </div>
+                </div>
+
+                <div class="flex flex-col sm:flex-row justify-between items-center gap-3 mt-6">
+                    <button onclick="switchTab('waktu')" class="w-full sm:w-auto px-5 py-3 border border-slate-300 text-slate-600 font-bold text-xs rounded-xl hover:bg-slate-50 active:scale-95 transition flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-arrow-left"></i> Kembali
+                    </button>
+                    <button onclick="switchTab('solusi')" class="w-full sm:w-auto px-5 py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-xl active:scale-95 transition flex items-center justify-center gap-2 shadow-md shadow-emerald-200">
+                        <span>Maju ke Bab 5</span>
+                        <i class="fa-solid fa-arrow-right"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Section 5: Solusi Kaffah & Makna -->
+            <div id="content-solusi" class="tab-content hidden space-y-6">
+                <div class="inline-flex items-center gap-2 px-3.5 py-1.5 bg-emerald-50 text-emerald-700 rounded-full text-xs font-bold border border-emerald-100">
+                    <i class="fa-solid fa-anchor"></i>
+                    <span>Bab 5: Solusi Makna</span>
+                </div>
+                
+                <h2 class="text-2xl md:text-4xl font-extrabold text-slate-900 tracking-tight leading-tight">
+                    Krisis Makna Modern & Solusi Komprehensif Islam
+                </h2>
+                
+                <p class="text-slate-600 leading-relaxed text-sm md:text-base">
+                    Mengapa media sosial memperparah kondisi mental generasi kita? Karena setiap hari manusia dipaksa membandingkan hidupnya yang biasa dengan topeng "kesuksesan" orang lain. Hidup berubah menjadi kompetisi demi validasi semu.
+                </p>
+
+                <div class="bg-gradient-to-tr from-emerald-50/50 to-teal-50/20 border border-emerald-100 p-6 rounded-3xl space-y-4">
+                    <h4 class="font-extrabold text-emerald-950 text-sm md:text-base flex items-center gap-2">
+                        <i class="fa-solid fa-cubes text-emerald-600"></i>
+                        <span>Fondasi Struktur Jiwa Menurut Islam:</span>
+                    </h4>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs md:text-sm text-slate-700">
+                        <div class="interactive-card flex items-center gap-3 p-3.5 bg-white rounded-2xl border border-emerald-100/60 shadow-sm">
+                            <span class="w-7 h-7 flex-shrink-0 flex items-center justify-center bg-emerald-100 text-emerald-800 rounded-xl font-extrabold text-xs">1</span>
+                            <span><strong>Tauhid:</strong> Mengenal siapa Allah secara hakiki.</span>
+                        </div>
+                        <div class="interactive-card flex items-center gap-3 p-3.5 bg-white rounded-2xl border border-emerald-100/60 shadow-sm">
+                            <span class="w-7 h-7 flex-shrink-0 flex items-center justify-center bg-emerald-100 text-emerald-800 rounded-xl font-extrabold text-xs">2</span>
+                            <span><strong>Iman:</strong> Memercayai seluruh ketetapan-Nya.</span>
+                        </div>
+                        <div class="interactive-card flex items-center gap-3 p-3.5 bg-white rounded-2xl border border-emerald-100/60 shadow-sm">
+                            <span class="w-7 h-7 flex-shrink-0 flex items-center justify-center bg-emerald-100 text-emerald-800 rounded-xl font-extrabold text-xs">3</span>
+                            <span><strong>Tawakal:</strong> Menyerahkan segala hasil setelah ikhtiar.</span>
+                        </div>
+                        <div class="interactive-card flex items-center gap-3 p-3.5 bg-white rounded-2xl border border-emerald-100/60 shadow-sm">
+                            <span class="w-7 h-7 flex-shrink-0 flex items-center justify-center bg-emerald-100 text-emerald-800 rounded-xl font-extrabold text-xs">4</span>
+                            <span><strong>Sabar & Syukur:</strong> Dua kendali utama atas takdir.</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Metafora Kapal Redesign -->
+                <div class="bg-slate-50 p-6 rounded-3xl border border-slate-200/80 flex flex-col md:flex-row gap-5 items-center">
+                    <div class="w-16 h-16 rounded-2xl bg-gradient-to-tr from-emerald-500 to-teal-500 text-white flex items-center justify-center shadow-lg shadow-emerald-200/80 flex-shrink-0">
+                        <i class="fa-solid fa-ship text-2xl"></i>
+                    </div>
+                    <div class="space-y-1 text-center md:text-left">
+                        <h4 class="font-extrabold text-slate-800 text-sm md:text-base">Metafora Kapal di Tengah Samudra</h4>
+                        <p class="text-xs md:text-sm text-slate-500 leading-relaxed">
+                            Lautan kehidupan akan selalu berombak (ujian datang silih berganti). Namun, kapal tidak akan pernah tenggelam selama air laut di luar sana <strong>tidak pernah dibiarkan bocor dan masuk menguasai bagian dalam kapal (hati)</strong>.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="flex flex-col sm:flex-row justify-between items-center gap-3 mt-6">
+                    <button onclick="switchTab('sayap')" class="w-full sm:w-auto px-5 py-3 border border-slate-300 text-slate-600 font-bold text-xs rounded-xl hover:bg-slate-50 active:scale-95 transition flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-arrow-left"></i> Kembali
+                    </button>
+                    <button onclick="switchTab('kuis')" class="w-full sm:w-auto px-5 py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-xs rounded-xl active:scale-95 transition flex items-center justify-center gap-2 shadow-md shadow-emerald-200">
+                        <span>Uji Pemahaman (Kuis)</span>
+                        <i class="fa-solid fa-circle-question"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Section 6: Interactive Quiz -->
+            <div id="content-kuis" class="tab-content hidden space-y-6">
+                <div class="inline-flex items-center gap-2 px-3.5 py-1.5 bg-emerald-50 text-emerald-700 rounded-full text-xs font-bold border border-emerald-100">
+                    <i class="fa-solid fa-circle-question"></i>
+                    <span>Evaluasi Mandiri</span>
+                </div>
+                
+                <h2 class="text-2xl md:text-4xl font-extrabold text-slate-900 tracking-tight leading-tight">
+                    Kuis Interaktif Kesehatan Mental Islam
+                </h2>
+                
+                <!-- Quiz Container -->
+                <div id="quiz-box" class="space-y-6">
+                    <!-- Progress Bar / Score Indicator -->
+                    <div class="bg-slate-50 p-4 rounded-2xl border border-slate-200 space-y-3">
+                        <div class="flex justify-between items-center text-xs md:text-sm font-extrabold">
+                            <span class="text-slate-600">Pertanyaan ke- <span id="currentQuestionNum" class="text-emerald-600">1</span> dari 5</span>
+                            <span class="bg-emerald-50 text-emerald-700 px-3 py-1 rounded-lg border border-emerald-100">Skor: <span id="quizScore" class="font-extrabold">0</span>/50</span>
+                        </div>
+                        <div class="w-full bg-slate-200 h-2.5 rounded-full overflow-hidden">
+                            <div id="quizProgress" class="bg-emerald-500 h-full transition-all duration-500" style="width: 20%;"></div>
+                        </div>
+                    </div>
+
+                    <!-- Question Card -->
+                    <div class="bg-white p-6 md:p-8 rounded-3xl border border-slate-200 shadow-sm space-y-6">
+                        <h3 id="questionText" class="font-extrabold text-slate-900 text-base md:text-lg leading-snug">Memuat Pertanyaan...</h3>
+                        <div id="answersContainer" class="space-y-3">
+                            <!-- Answer buttons dynamically generated -->
+                        </div>
+                    </div>
+
+                    <!-- Answer Feedback Banner -->
+                    <div id="feedbackContainer" class="hidden p-5 rounded-2xl border space-y-4 transition-all duration-300">
+                        <div class="flex gap-3.5 items-center">
+                            <div id="feedbackIconBox" class="w-10 h-10 rounded-xl flex items-center justify-center text-white shadow-md">
+                                <i id="feedbackIcon" class="fa-solid"></i>
+                            </div>
+                            <h4 id="feedbackTitle" class="font-extrabold text-sm md:text-base"></h4>
+                        </div>
+                        <p id="feedbackText" class="text-xs md:text-sm leading-relaxed text-slate-600 font-medium"></p>
+                        <button id="nextBtn" onclick="nextQuestion()" class="w-full md:w-auto px-6 py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-xs rounded-xl active:scale-95 transition-all duration-150 flex items-center justify-center gap-2">
+                            <span>Lanjutkan Pertanyaan</span>
+                            <i class="fa-solid fa-chevron-right"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Quiz Results Area -->
+                <div id="results-box" class="hidden space-y-6 text-center py-10 bg-slate-50/50 rounded-3xl border border-slate-200/80">
+                    <div class="w-24 h-24 mx-auto rounded-full bg-emerald-100 flex items-center justify-center shadow-lg shadow-emerald-100 animate-bounce">
+                        <i id="resultBadge" class="fa-solid fa-trophy text-4xl text-emerald-600"></i>
+                    </div>
+                    <div class="space-y-2">
+                        <h3 id="resultTitle" class="text-2xl md:text-3xl font-extrabold text-slate-900">Masya Allah! Anda Luar Biasa!</h3>
+                        <p class="text-slate-500 text-xs md:text-sm max-w-md mx-auto">
+                            Anda telah menyelesaikan seluruh kuis dengan baik. Anda berhasil mengumpulkan skor sebesar:
+                        </p>
+                    </div>
+                    <div class="text-5xl md:text-6xl font-extrabold text-emerald-600 py-2 tracking-tight" id="finalScoreVal">100</div>
+                    <p id="resultFeedback" class="text-xs md:text-sm text-slate-600 max-w-sm mx-auto leading-relaxed font-semibold px-4"></p>
+                    
+                    <button onclick="restartQuiz()" class="px-6 py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-xs rounded-xl active:scale-95 transition inline-flex items-center gap-2 shadow-md shadow-emerald-200">
+                        <i class="fa-solid fa-rotate-left"></i>
+                        <span>Ulangi Kuis</span>
+                    </button>
+                </div>
+
+                <div class="flex justify-between items-center mt-6 pt-4 border-t border-slate-100">
+                    <button onclick="switchTab('solusi')" class="px-5 py-2.5 border border-slate-300 text-slate-600 font-bold text-xs rounded-xl hover:bg-slate-50 active:scale-95 transition flex items-center gap-2">
+                        <i class="fa-solid fa-arrow-left"></i> Kembali ke Bab 5
+                    </button>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-slate-900 text-slate-400 text-xs py-10 px-4 mt-auto border-t border-slate-800">
+        <div class="max-w-7xl mx-auto space-y-4 text-center">
+            <div class="flex justify-center items-center gap-2 text-white">
+                <i class="fa-solid fa-leaf text-emerald-500 text-base"></i>
+                <span class="font-extrabold text-sm tracking-wide">Sakinah Modul Kesehatan Jiwa</span>
+            </div>
+            <p class="text-slate-500 text-[11px] max-w-xl mx-auto leading-relaxed">
+                Dirancang untuk memberikan pemahaman holistik yang seimbang antara kaidah ukhrawi dan kesehatan mental psikologis yang berlandaskan Al-Qur'an dan Sunnah.
+            </p>
+            <div class="pt-4 border-t border-slate-800 text-[10px] text-slate-600 flex flex-col sm:flex-row justify-between items-center gap-2">
+                <span>&copy; 2026 Nafsi Islamics. Hak Cipta Dilindungi.</span>
+                <span class="flex items-center gap-1"><i class="fa-solid fa-shield text-emerald-700 text-[8px]"></i> Al-Qur'an & Sunnah Kaffah</span>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Web Audio API Script (Proportional Synthesized Sound Effects) -->
+    <script>
+        let audioCtx;
+        let ambientSource = null;
+        let isAmbientPlaying = false;
+        let sfxEnabled = true;
+
+        function initAudio() {
+            if (!audioCtx) {
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            }
+            if (audioCtx.state === 'suspended') {
+                audioCtx.resume();
+            }
+        }
+
+        function playTone(freq, type, duration, gainStart) {
+            if (!sfxEnabled) return;
+            initAudio();
+            try {
+                const osc = audioCtx.createOscillator();
+                const gainNode = audioCtx.createGain();
+                
+                osc.type = type;
+                osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+                gainNode.gain.setValueAtTime(gainStart, audioCtx.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + duration);
+                
+                osc.connect(gainNode);
+                gainNode.connect(audioCtx.destination);
+                
+                osc.start();
+                osc.stop(audioCtx.currentTime + duration);
+            } catch (e) {
+                console.log("Audio Error:", e);
+            }
+        }
+
+        function playNavClick() {
+            playTone(700, 'triangle', 0.08, 0.04);
+        }
+
+        function playCorrectSound() {
+            playTone(523.25, 'sine', 0.15, 0.08); // C5
+            setTimeout(() => playTone(659.25, 'sine', 0.15, 0.08), 80); // E5
+            setTimeout(() => playTone(783.99, 'sine', 0.3, 0.08), 160); // G5
+        }
+
+        function playWrongSound() {
+            playTone(180, 'sawtooth', 0.25, 0.08);
+            setTimeout(() => playTone(140, 'sawtooth', 0.3, 0.08), 100);
+        }
+
+        function toggleSFX() {
+            sfxEnabled = !sfxEnabled;
+            const sfxIcon = document.getElementById('sfxIcon');
+            if (sfxEnabled) {
+                sfxIcon.className = "fa-solid fa-volume-high text-xs text-emerald-600";
+            } else {
+                sfxIcon.className = "fa-solid fa-volume-xmark text-xs text-slate-400";
+            }
+        }
+
+        function toggleAmbiance() {
+            initAudio();
+            const btn = document.getElementById('ambientBtn');
+            
+            if (!isAmbientPlaying) {
+                try {
+                    const bufferSize = 2 * audioCtx.sampleRate;
+                    const noiseBuffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+                    const output = noiseBuffer.getChannelData(0);
+                    
+                    let b0 = 0, b1 = 0, b2 = 0, b3 = 0, b4 = 0, b5 = 0, b6 = 0;
+                    for (let i = 0; i < bufferSize; i++) {
+                        const white = Math.random() * 2 - 1;
+                        b0 = 0.99886 * b0 + white * 0.0555179;
+                        b1 = 0.99332 * b1 + white * 0.0750759;
+                        b2 = 0.96900 * b2 + white * 0.1538520;
+                        b3 = 0.86650 * b3 + white * 0.3104856;
+                        b4 = 0.55000 * b4 + white * 0.5329522;
+                        b5 = -0.7616 * b5 - white * 0.0168980;
+                        output[i] = b0 + b1 + b2 + b3 + b4 + b5 + b6 + white * 0.5362;
+                        output[i] *= 0.11;
+                        b6 = white * 0.115926;
+                    }
+
+                    ambientSource = audioCtx.createBufferSource();
+                    ambientSource.buffer = noiseBuffer;
+                    ambientSource.loop = true;
+
+                    const filter = audioCtx.createBiquadFilter();
+                    filter.type = 'lowpass';
+                    filter.frequency.setValueAtTime(280, audioCtx.currentTime);
+                    filter.Q.setValueAtTime(0.7, audioCtx.currentTime);
+
+                    const interval = setInterval(() => {
+                        if (!isAmbientPlaying) {
+                            clearInterval(interval);
+                            return;
+                        }
+                        const t = audioCtx.currentTime;
+                        const randomFreq = 180 + Math.random() * 120;
+                        filter.frequency.exponentialRampToValueAtTime(randomFreq, t + 4);
+                    }, 4000);
+
+                    const gainNode = audioCtx.createGain();
+                    gainNode.gain.setValueAtTime(0.015, audioCtx.currentTime);
+
+                    ambientSource.connect(filter);
+                    filter.connect(gainNode);
+                    gainNode.connect(audioCtx.destination);
+
+                    ambientSource.start();
+                    isAmbientPlaying = true;
+                    btn.innerHTML = `<i class="fa-solid fa-volume-high text-[10px]"></i> <span>Relaksasi: On</span>`;
+                    btn.className = "px-3 py-1.5 text-[11px] font-bold rounded-lg bg-emerald-600 text-white shadow-md shadow-emerald-200 transition duration-200 flex items-center gap-1.5";
+                } catch(e) {
+                    console.log("Could not start ambiance synth:", e);
+                }
+            } else {
+                if (ambientSource) {
+                    ambientSource.stop();
+                    ambientSource.disconnect();
+                }
+                isAmbientPlaying = false;
+                btn.innerHTML = `<i class="fa-solid fa-wind text-[10px]"></i> <span>Relaksasi: Off</span>`;
+                btn.className = "px-3 py-1.5 text-[11px] font-bold rounded-lg bg-slate-200 text-slate-700 hover:bg-slate-300 transition duration-200 flex items-center gap-1.5";
+            }
+        }
+
+        const tabs = ['intro', 'akar', 'waktu', 'sayap', 'solusi', 'kuis'];
+        function switchTab(targetId) {
+            initAudio();
+            playNavClick();
+            
+            tabs.forEach(tab => {
+                const content = document.getElementById(`content-${tab}`);
+                const tabBtn = document.getElementById(`tab-${tab}`);
+                const mTabBtn = document.getElementById(`m-tab-${tab}`);
+                
+                if (tab === targetId) {
+                    content.classList.remove('hidden');
+                    content.classList.add('fade-in-active');
+                    
+                    // Desktop active style
+                    if (tabBtn) {
+                        tabBtn.className = "w-full text-left px-4 py-3.5 rounded-2xl transition-all duration-200 flex items-center gap-3 font-bold text-sm bg-emerald-600 text-white shadow-md shadow-emerald-200/80 active:scale-98";
+                        const icon = tabBtn.querySelector('i');
+                        if (icon) icon.className = icon.className.replace('text-slate-400', 'text-white');
+                    }
+                    
+                    // Mobile active style
+                    if (mTabBtn) {
+                        mTabBtn.className = "flex-shrink-0 px-4 py-2 rounded-xl text-xs font-bold transition-all duration-200 flex items-center gap-2 bg-emerald-600 text-white shadow-sm";
+                    }
+                } else {
+                    content.classList.add('hidden');
+                    content.classList.remove('fade-in-active');
+                    
+                    // Desktop inactive style
+                    if (tabBtn) {
+                        tabBtn.className = "w-full text-left px-4 py-3.5 rounded-2xl transition-all duration-200 flex items-center gap-3 font-bold text-sm text-slate-600 hover:bg-slate-50 active:scale-98";
+                        const icon = tabBtn.querySelector('i');
+                        if (icon) icon.className = icon.className.replace('text-white', 'text-slate-400');
+                    }
+                    
+                    // Mobile inactive style
+                    if (mTabBtn) {
+                        if (tab === 'kuis') {
+                            mTabBtn.className = "flex-shrink-0 px-4 py-2 rounded-xl text-xs font-bold transition-all duration-200 flex items-center gap-2 bg-emerald-50 text-emerald-700 border border-emerald-200/60";
+                        } else {
+                            mTabBtn.className = "flex-shrink-0 px-4 py-2 rounded-xl text-xs font-bold transition-all duration-200 flex items-center gap-2 bg-slate-100 text-slate-600";
+                        }
+                    }
+                }
+            });
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function updateBackpackSimulator(val) {
+            initAudio();
+            const dayText = document.getElementById('backpackDay');
+            const weightText = document.getElementById('backpackWeight');
+            const fluid = document.getElementById('backpackFluid');
+            const container = document.getElementById('backpackContainerVisual');
+            const icon = document.getElementById('backpackIcon');
+            const status = document.getElementById('backpackStatus');
+            const desc = document.getElementById('backpackDesc');
+            
+            dayText.innerText = Math.ceil(val/2.5);
+            weightText.innerText = val;
+
+            // Height mapping for fluid container visual
+            const heightPercent = Math.max(10, Math.min(100, val * 3.33));
+            fluid.style.height = `${heightPercent}%`;
+
+            // Sound feedback proportional to weight
+            playTone(280 + (val * 12), 'sine', 0.05, 0.02);
+
+            if (val <= 6) {
+                status.innerText = "Sangat Ringan";
+                status.className = "px-3 py-1 text-xs font-bold bg-emerald-100 text-emerald-800 rounded-full border border-emerald-200";
+                desc.innerText = "Beban ringan harian biasa. Masih sangat sanggup Anda pikul dengan santai tanpa merusak ritme hidup.";
+                container.className = "w-16 h-20 bg-emerald-50 border-2 border-emerald-500 rounded-xl relative overflow-hidden flex flex-col justify-end transition-all duration-300 shadow-md";
+                fluid.className = "w-full bg-gradient-to-t from-emerald-500 to-teal-400 transition-all duration-300";
+                icon.className = "fa-solid fa-face-smile text-emerald-600 text-2xl transition-all duration-300";
+            } else if (val <= 18) {
+                status.innerText = "Mulai Pegal";
+                status.className = "px-3 py-1 text-xs font-bold bg-amber-100 text-amber-800 rounded-full border border-amber-200";
+                desc.innerText = "Pundak mulai pegal. Jiwa lelah bukan karena bertambahnya beban luar, tapi karena terus-menerus Anda pikul sendiri di dalam dada.";
+                container.className = "w-16 h-20 bg-amber-50 border-2 border-amber-500 rounded-xl relative overflow-hidden flex flex-col justify-end transition-all duration-300 shadow-md";
+                fluid.className = "w-full bg-gradient-to-t from-amber-500 to-orange-400 transition-all duration-300";
+                icon.className = "fa-solid fa-face-meh text-amber-600 text-2xl transition-all duration-300";
+            } else {
+                status.innerText = "Sangat Berat!";
+                status.className = "px-3 py-1 text-xs font-bold bg-rose-100 text-rose-800 rounded-full border border-rose-200 animate-pulse";
+                desc.innerText = "Beban terasa menghimpit dada! Letakkan beban ini sekarang juga. Serahkan ujung hasil kepada Allah (Tawakal) agar jiwa Anda kembali bernapas lega.";
+                container.className = "w-16 h-20 bg-rose-50 border-2 border-rose-500 rounded-xl relative overflow-hidden flex flex-col justify-end transition-all duration-300 shadow-md shadow-rose-200/50";
+                fluid.className = "w-full bg-gradient-to-t from-rose-500 to-red-400 transition-all duration-300";
+                icon.className = "fa-solid fa-face-frown text-rose-600 text-2xl transition-all duration-300";
+            }
+        }
+
+        function updateWingSimulator(val) {
+            initAudio();
+            const leftVal = document.getElementById('leftWingVal');
+            const rightVal = document.getElementById('rightWingVal');
+            const birdSVGContainer = document.getElementById('birdSVGContainer');
+            const status = document.getElementById('wingStatus');
+            const desc = document.getElementById('wingDesc');
+
+            const leftWingSVG = document.getElementById('leftWingSVG');
+            const rightWingSVG = document.getElementById('rightWingSVG');
+
+            const leftPerc = 100 - val;
+            const rightPerc = val;
+
+            leftVal.innerText = `${leftPerc}%`;
+            rightVal.innerText = `${rightPerc}%`;
+
+            // Angle tilting logic based on scale balance
+            const angle = (val - 50) * 0.7;
+            birdSVGContainer.style.transform = `rotate(${angle}deg)`;
+
+            // Morph individual wing sizes relative to slider value
+            const scaleLeft = 0.5 + (leftPerc / 100);
+            const scaleRight = 0.5 + (rightPerc / 100);
+            leftWingSVG.style.transform = `scale(${scaleLeft})`;
+            rightWingSVG.style.transform = `scale(${scaleRight})`;
+
+            if (val % 5 === 0) {
+                playTone(380 + (val * 2.5), 'triangle', 0.03, 0.015);
+            }
+
+            if (val >= 42 && val <= 58) {
+                status.innerText = "Kedua Sayap Seimbang";
+                status.className = "inline-block px-3 py-1 text-xs font-bold bg-emerald-100 text-emerald-800 rounded-full border border-emerald-200/60";
+                desc.innerText = "Masya Allah! Bagaikan burung yang terbang gagah di cakrawala. Jiwa Anda seimbang: memiliki rasa takut (khauf) agar tidak sombong, dan harapan penuh (raja') agar tidak putus asa.";
+            } else if (val < 42) {
+                status.innerText = "Sayap Kiri Terlalu Berat (Khauf Berlebih)";
+                status.className = "inline-block px-3 py-1 text-xs font-bold bg-rose-100 text-rose-800 rounded-full border border-rose-200/60";
+                desc.innerText = "Hati Anda terseret ke jurang keputusasaan. Anda dilingkupi rasa pesimis, merasa tak layak diampuni, dan berprasangka buruk pada takdir.";
+            } else {
+                status.innerText = "Sayap Kanan Terlalu Berat (Raja' Berlebih)";
+                status.className = "inline-block px-3 py-1 text-xs font-bold bg-amber-100 text-amber-800 rounded-full border border-amber-200/60";
+                desc.innerText = "Hati Anda terlena dalam Ghurur (harapan palsu). Merasa pasti selamat tanpa beramal nyata dan mempermudah perbuatan dosa dengan dalih Allah Maha Pengampun.";
+            }
+        }
+
+
+        const quizQuestions = [
+            {
+                q: "Apa akar masalah utama dari merebaknya kecemasan (anxiety) ekstrem di kalangan anak muda saat ini menurut modul?",
+                a: [
+                    "Pengaruh media sosial dan tekanan persaingan karir modern.",
+                    "Genetika dan rusaknya reaksi senyawa kimia di dalam otak.",
+                    "Cara pandang hidup yang salah serta beban yang dipikul sendiri tanpa bersandar (Tawakal).",
+                    "Kurangnya jaminan keamanan ekonomi dan sistem pendidikan yang melelahkan."
+                ],
+                correct: 2,
+                explain: "Tepat sekali! Media sosial dan ekonomi hanyalah gejala pemicu. Akar masalah yang sesungguhnya adalah cara pandang hidup yang tidak bersandar pada Allah, bagaikan memikul tas berat terus-menerus tanpa pernah meletakkannya."
+            },
+            {
+                q: "Bagaimana Islam memetakan kecemasan berlebih jika dilihat dari dimensi ruang waktu?",
+                a: [
+                    "Huzn (kesedihan) berasal dari luar diri, sedangkan Khauf (ketakutan) berasal dari dalam diri.",
+                    "Huzn bersumber dari peristiwa masa lalu, sedangkan Khauf bersumber dari proyeksi masa depan.",
+                    "Khauf bersumber dari masa lalu, sedangkan Huzn bersumber dari masa depan.",
+                    "Keduanya murni emosi acak yang tidak dipengaruhi dimensi waktu."
+                ],
+                correct: 1,
+                explain: "Benar! Huzn (sedih) selalu menatap masa lalu yang tak bisa diubah (mengemudi sambil menatap spion). Khauf (takut) mencemaskan masa depan yang belum terjadi (membuka payung padahal tidak hujan)."
+            },
+            {
+                q: "Apa yang membedakan perasaan sedih (Huzn) antara dua orang yang kehilangan pekerjaan yang sama?",
+                a: [
+                    "Besarnya pesangon yang mereka terima masing-masing.",
+                    "Keterikatan pertemanan di tempat kerja sebelumnya.",
+                    "Makna yang diberikan oleh hati masing-masing orang terhadap peristiwa tersebut.",
+                    "Keberuntungan yang memang berbeda secara nasib dasar."
+                ],
+                correct: 2,
+                explain: "Tepat! Kesedihan bukan karena peristiwanya itu sendiri, melainkan karena makna yang diberikan hati. Satu orang menganggap 'Hidupku hancur', sementara mukmin lainnya menganggap 'Mungkin Allah sedang membuka pintu rezeki yang lebih baik'."
+            },
+            {
+                q: "Apa pengertian penyakit hati 'Ghurur' dalam kaitannya dengan pilar Raja' (Harapan)?",
+                a: [
+                    "Malu mengakui kelemahan diri di hadapan orang banyak.",
+                    "Berputus asa sepenuhnya dari limpahan rahmat dan kasih sayang Allah.",
+                    "Harapan palsu di mana seseorang merasa pasti selamat & diampuni, namun ia terus-menerus bermaksiat tanpa beramal.",
+                    "Menolak perintah Allah secara sombong karena merasa diciptakan lebih mulia."
+                ],
+                correct: 2,
+                explain: "Tepat! Raja' yang benar melahirkan amal saleh. Sementara ghurur adalah tipuan angan-angan kosong: merasa pasti dicintai Allah namun secara sadar terus mengabaikan perintah-Nya."
+            },
+            {
+                q: "Apakah emosi sedih dan takut sepenuhnya terlarang bagi seorang muslim?",
+                a: [
+                    "Ya, seorang mukmin sejati dilarang keras merasakan sedih atau takut sedikit pun.",
+                    "Tidak, keduanya adalah fitrah manusia; yang dicela adalah jika emosi tersebut menguasai hati hingga mematikan tawakal.",
+                    "Hanya emosi sedih yang diperbolehkan, sementara emosi takut sepenuhnya dilarang.",
+                    "Ya, sedih dan takut merupakan ciri paling mutlak dari seseorang yang kehilangan imannya."
+                ],
+                correct: 1,
+                explain: "Luar biasa! Sedih dan takut adalah emosi fitrah manusiawi (bahkan para nabi pun pernah mengalaminya). Yang dicela adalah saat emosi itu melampaui batas hingga membuat kita kehilangan kepasrahan dan arah tujuan penciptaan."
+            }
+        ];
+
+        let currentQIndex = 0;
+        let score = 0;
+        let hasAnswered = false;
+
+        function loadQuestion() {
+            hasAnswered = false;
+            const questionNum = currentQIndex + 1;
+            document.getElementById('currentQuestionNum').innerText = questionNum;
+            document.getElementById('quizScore').innerText = score;
+            document.getElementById('quizProgress').style.width = `${(questionNum / quizQuestions.length) * 100}%`;
+
+            const currentQ = quizQuestions[currentQIndex];
+            document.getElementById('questionText').innerText = currentQ.q;
+
+            const answersContainer = document.getElementById('answersContainer');
+            answersContainer.innerHTML = '';
+            document.getElementById('feedbackContainer').classList.add('hidden');
+
+            currentQ.a.forEach((ans, idx) => {
+                const btn = document.createElement('button');
+                btn.className = "w-full text-left p-4 rounded-2xl border border-slate-200 bg-white hover:bg-slate-50 transition duration-150 text-xs md:text-sm font-semibold text-slate-700 flex items-start gap-3.5 shadow-sm active:scale-99";
+                btn.innerHTML = `<span class="flex-shrink-0 w-6 h-6 rounded-xl bg-slate-100 flex items-center justify-center font-extrabold text-slate-500 text-xs">${String.fromCharCode(65 + idx)}</span> <span class="pt-0.5 leading-relaxed">${ans}</span>`;
+                btn.onclick = () => selectAnswer(idx);
+                answersContainer.appendChild(btn);
+            });
+        }
+
+        function selectAnswer(ansIdx) {
+            if (hasAnswered) return;
+            hasAnswered = true;
+
+            const currentQ = quizQuestions[currentQIndex];
+            const feedbackContainer = document.getElementById('feedbackContainer');
+            const feedbackIconBox = document.getElementById('feedbackIconBox');
+            const feedbackIcon = document.getElementById('feedbackIcon');
+            const feedbackTitle = document.getElementById('feedbackTitle');
+            const feedbackText = document.getElementById('feedbackText');
+            const buttons = document.getElementById('answersContainer').children;
+
+            // Highlight answers visually
+            for (let i = 0; i < buttons.length; i++) {
+                buttons[i].classList.remove('hover:bg-slate-50', 'active:scale-99');
+                if (i === currentQ.correct) {
+                    buttons[i].className = "w-full text-left p-4 rounded-2xl border-2 border-emerald-500 bg-emerald-50 text-emerald-900 transition duration-150 text-xs md:text-sm font-bold flex items-start gap-3.5 shadow-sm shadow-emerald-50";
+                    buttons[i].children[0].className = "flex-shrink-0 w-6 h-6 rounded-xl bg-emerald-500 text-white flex items-center justify-center font-extrabold text-xs";
+                } else if (i === ansIdx) {
+                    buttons[i].className = "w-full text-left p-4 rounded-2xl border-2 border-rose-300 bg-rose-50 text-rose-900 transition duration-150 text-xs md:text-sm font-bold flex items-start gap-3.5 shadow-sm shadow-rose-50";
+                    buttons[i].children[0].className = "flex-shrink-0 w-6 h-6 rounded-xl bg-rose-500 text-white flex items-center justify-center font-extrabold text-xs";
+                } else {
+                    buttons[i].classList.add('opacity-40');
+                }
+            }
+
+            if (ansIdx === currentQ.correct) {
+                playCorrectSound();
+                score += 10;
+                feedbackContainer.className = "p-5 rounded-2xl border border-emerald-200 bg-emerald-50/40 space-y-3 transition-all duration-300";
+                feedbackIconBox.className = "w-10 h-10 rounded-xl flex items-center justify-center bg-emerald-500 text-white shadow-md shadow-emerald-200";
+                feedbackIcon.className = "fa-solid fa-circle-check text-lg";
+                feedbackTitle.innerText = "Jawaban Benar!";
+                feedbackTitle.className = "font-extrabold text-sm md:text-base text-emerald-800";
+            } else {
+                playWrongSound();
+                feedbackContainer.className = "p-5 rounded-2xl border border-rose-200 bg-rose-50/40 space-y-3 transition-all duration-300";
+                feedbackIconBox.className = "w-10 h-10 rounded-xl flex items-center justify-center bg-rose-500 text-white shadow-md shadow-rose-200";
+                feedbackIcon.className = "fa-solid fa-circle-xmark text-lg";
+                feedbackTitle.innerText = "Jawaban Kurang Tepat";
+                feedbackTitle.className = "font-extrabold text-sm md:text-base text-rose-800";
+            }
+
+            feedbackText.innerText = currentQ.explain;
+            document.getElementById('quizScore').innerText = score;
+            feedbackContainer.classList.remove('hidden');
+        }
+
+        function nextQuestion() {
+            currentQIndex++;
+            if (currentQIndex < quizQuestions.length) {
+                playNavClick();
+                loadQuestion();
+            } else {
+                showResults();
+            }
+        }
+
+        function showResults() {
+            playCorrectSound();
+            document.getElementById('quiz-box').classList.add('hidden');
+            const resultsBox = document.getElementById('results-box');
+            resultsBox.classList.remove('hidden');
+
+            document.getElementById('finalScoreVal').innerText = score;
+
+            const badge = document.getElementById('resultBadge');
+            const title = document.getElementById('resultTitle');
+            const feedback = document.getElementById('resultFeedback');
+
+            if (score === 50) {
+                badge.className = "fa-solid fa-trophy text-4xl text-amber-500";
+                title.innerText = "Masya Allah, Sempurna!";
+                feedback.innerText = "Anda memahami materi kesehatan mental Islam yang kaffah ini secara mendalam dan menyeluruh. Terus tebarkan ilmu bermanfaat ini!";
+            } else if (score >= 30) {
+                badge.className = "fa-solid fa-award text-4xl text-emerald-600";
+                title.innerText = "Hebat! Pemahaman yang Baik";
+                feedback.innerText = "Pemahaman Anda sudah sangat mumpuni. Hanya membutuhkan sedikit ulasan kembali pada konsep keseimbangan agar pemahaman Anda semakin kaffah.";
+            } else {
+                badge.className = "fa-solid fa-book-open text-4xl text-slate-500";
+                title.innerText = "Tetap Semangat Belajar!";
+                feedback.innerText = "Jangan berkecil hati. Anda dapat membaca ulang setiap modul interaktif di atas dan mencoba kuis ini sekali lagi untuk mengasah pemahaman.";
+            }
+        }
+
+        function restartQuiz() {
+            score = 0;
+            currentQIndex = 0;
+            playNavClick();
+            document.getElementById('results-box').classList.add('hidden');
+            document.getElementById('quiz-box').classList.remove('hidden');
+            loadQuestion();
+        }
+
+        // Run on load
+        window.onload = () => {
+            loadQuestion();
+        };
+    </script>
+</body>
+</html>
